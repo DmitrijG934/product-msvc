@@ -1,0 +1,6 @@
+apiVersion: v2
+name: msvc-gateway
+description: A Helm chart of Sprint Boot microservice for k8s
+type: application
+version: 1.0.0
+appVersion: "1.16.0"

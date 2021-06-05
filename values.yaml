@@ -1,0 +1,11 @@
+msvc-backend:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 50m
+
+msvc-gateway:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 50m

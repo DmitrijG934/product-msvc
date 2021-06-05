@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "msvc-gateway.defaultName" . }}
+  labels:
+    {{- include "msvc-gateway.labels" . | nindent 4 }}
+    tier: gateway
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "msvc-gateway.selectorLabels" . | nindent 6 }}
+      tier: gateway
+  template:
+    metadata:
+      labels:
+        {{- include "msvc-gateway.selectorLabels" . | nindent 8 }}
+        tier: gateway
+    spec:
+      serviceAccountName: {{ include "msvc-gateway.serviceaccount.name" . }}
+      containers:
+        - name: {{ include "msvc-gateway.container.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.actuator.path }}
+              port: {{ .Values.actuator.port | default "8080" }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.actuator.path }}
+              port: {{ .Values.actuator.port | default "8080" }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          envFrom:
+            - configMapRef:
+                name: "{{ include "msvc-gateway.serviceaccount.name" . }}-cm"
+          env:
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "msvc-gateway.defaultName" . }}-secret
+                  key: secret
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

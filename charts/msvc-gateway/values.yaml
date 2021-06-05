@@ -1,0 +1,40 @@
+replicaCount: 1
+
+image:
+  repository: 324124/microservices-gateway
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+actuator:
+  port: 8080
+  path: /actuator/health
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  nodePort: 30500
+  type: NodePort
+  port: 8080
+
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 3
+
+readinessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 5
+
+secrets:
+  secret: "some-secret-string"

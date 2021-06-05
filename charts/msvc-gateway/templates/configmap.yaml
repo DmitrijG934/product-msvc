@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "msvc-gateway.serviceaccount.name" . }}-cm"
+  labels:
+  {{- include "msvc-gateway.labels" . | nindent 4 }}
+data:
+  BACKEND_URL: "http://{{ include "msvc-backend.service.name" . }}:{{ .Values.service.port }}/"
